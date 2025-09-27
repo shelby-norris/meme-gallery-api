@@ -1,4 +1,4 @@
-import express, { response } from "express";
+import express, { request, response } from "express";
 const app = express();
 const port = 3000;
 
@@ -12,8 +12,18 @@ const memes = [
   { id: 2, title: "Success Kid", url: "https://i.imgur.com/example2.jpg" },
 ];
 
+
+// *****MIDDLEWARE*****
 // middleware to parse json
 app.use(express.json())
+
+// middleware for logging
+app.use((request, response, next) => {
+  console.log(
+    `${request.method} ${request.url} at ${new Date().toISOString()}`
+  );
+  next();
+})
 
 // *****ROUTES*****
 // root route from express site
@@ -26,6 +36,18 @@ app.get("/memes", (request, response) => {
   response.json(memes);
 });
 
+// get meme by id
+app.get("/memes/:id", (request, response) => {
+  const {id} = request.params;
+  const foundMeme = memes.find((meme) => meme.id ===parseInt(id));
+
+  if (!foundMeme) {
+    return response.status(404).json({error: "Meme not found"});
+  }
+  response.json(foundMeme);
+})
+
+// create meme 
 app.post("/memes", (request, response) => {
   const { title, url } = request.body;
 
