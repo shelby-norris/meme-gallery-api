@@ -63,6 +63,23 @@ app.post("/memes", (request, response) => {
   response.status(201).json(newMeme);
 });
 
+
+//update meme by id
+app.put("/memes/:id", (request, response) => {
+  const {id} = request.params;
+  const {title, url} = request.body;
+  const meme = memes.find((memes) => memes.id === parseInt(id));
+
+  if (!meme) {
+    return response.status(404).json({error: "Meme not found"});
+  }
+
+  meme.title = title || meme.title;
+  meme.url = url || meme.url;
+
+  response.json(meme);
+})
+
 // MIDDLEWARE
 // error handler (404)
 app.use((request, response, next) => {
